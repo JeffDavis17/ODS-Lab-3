@@ -15,7 +15,7 @@ import math as m
 # We can determine the rank of the B matrix and this should equal the number of redundant observations either 9 or 10?? probably 10
 
 # Data
-d = pd.read_csv(r'code\data.csv')
+d = pd.read_csv(r'C:/Users/Family/Documents/GitHub/ODS-Lab-3/code/data.csv')
 d = np.array(d)
 
 # Variables 
@@ -41,26 +41,34 @@ Drt = Symbol('Drt')
 var = np.array([a1,a2,a3,a4,a5,a6,a7,a8,Dqr,Drs,Dst,Dtq,Dqs,Drt])
 
 
-## CONDITIONS and Derivatives 8-------------------------------------------------------------->
+## CONDITIONS and Derivatives for 2nd Design Matrix
+# Second Design matrix should be number conditions by number observations? Maybe 10 by 14
+b = np.zeros([10,14])
+
+
 # Sum around the polygon
-ang_Sum = sum(var[0:8])
-ang_diff = np.array(np.zeros(14))
-ang_diff[:] = diff(ang_Sum,var[:])
-print(ang_diff) 
+ang_Sum = sum(var[0:8]) # Sum angles
+ang_diff = np.array(np.zeros(14)) # Initialize 
+ang_diff[:] = diff(ang_Sum,var[:]) # Take Derivative
+
+ang_sum_w = sum(ang) - ang[2] # Misclosure of Internal Angles
+
 
 # Sine Law 
+sin_421 = sin(a7)/Dst - sin(a4)/Dqs
+sin_421_diff = []
+sin_421_diff[:] = np.array(diff(sin_421,var[:])) # Take Derivative
+
+sin_421_w = m.sin(ang[7])/dist[0,2] - m.sin(ang[4])/dist[0,4] # Misclosure of sine law 
 
 
 
-## MISCLOSURES
-# Sum around polygon - should be 360
-# 1 + 8 + 7 + 6 + 5 + 4 + 3 + (2-3)  
-int_angle = ang[0] + ang[7] + ang[6] + ang[5] + ang[4] + ang[3] + ang[1] 
-
-# Sine Law 
-something = m.sin(ang[7])/dist[0,2] - m.sin(ang[4])/dist[0,4]
 
 # Some other relationship that d1*d2=1????
 something2 = (dist[0,1]/dist[0,0])*(dist[0,0]/dist[0,4])*(dist[0,4]/dist[0,1]) - 1
 
 
+dist_rela = (Drs/Dqr)*(Dqr/Dqs)*(Dqs/Drs)
+dist_rela_diff = []
+dist_rela_diff[:] = np.array(diff(dist_rela,var[:]))
+print(dist_rela_diff)
