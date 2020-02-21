@@ -69,6 +69,8 @@ something2 = (dist[0,1]/dist[0,0])*(dist[0,0]/dist[0,4])*(dist[0,4]/dist[0,1]) -
 
 
 dist_rela = (Drs/Dqr)*(Dqr/Dqs)*(Dqs/Drs)
-dist_rela_diff = []
-dist_rela_diff[:] = np.array(diff(dist_rela,var[:]))
+dist_rela_diff = np.ones([14])
+dist_rela_diff[:] = diff(dist_rela,var[:])
 print(dist_rela_diff)
+
+
