@@ -2,75 +2,90 @@ import numpy as np
 from sympy import *
 import pandas as pd
 import math as m
-
-
-# Lab assignment number 3: Conditions in Triangulateration
-# In this lab there are 5 unknowns, 14 observations, 1 known baseline. That means there are 14+1-5 = 10 redundant observations?
-# unknowns: Dqs, Dqt, Dqr, AZqt, AZqs
-
-# Possible Geometric Conditions include: Sine Law, Cosine Law, sum of angles in polygon, Horizon  
-# We either need 9 or 10 independant conditions
-
-
-# We can determine the rank of the B matrix and this should equal the number of redundant observations either 9 or 10?? probably 10
-
-# Data
-d = pd.read_csv(r'C:/Users/Family/Documents/GitHub/ODS-Lab-3/code/data.csv')
-d = np.array(d)
-
-# Variables 
-dist = np.array([d[0:6,2]],dtype=float) # Distance Observations
-ang = np.array(d[9:17,1:4],dtype=float)
-ang = ang[:,0] + ang[:,1]/60 + ang[:,2]/3600 
-
-# Sympy Variables
-a1 = Symbol('a1')
-a2 = Symbol('a2')
-a3 = Symbol('a3')
-a4 = Symbol('a4')
-a5 = Symbol('a5')
-a6 = Symbol('a6')
-a7 = Symbol('a7')
-a8 = Symbol('a8')
-Dqr = Symbol('Dqr')
-Drs = Symbol('Drs')
-Dst = Symbol('Dst')
-Dtq = Symbol('Dtq')
-Dqs = Symbol('Dqs')
-Drt = Symbol('Drt')
-var = np.array([a1,a2,a3,a4,a5,a6,a7,a8,Dqr,Drs,Dst,Dtq,Dqs,Drt])
+from data import *
 
 
 ## CONDITIONS and Derivatives for 2nd Design Matrix
 # Second Design matrix should be number conditions by number observations? Maybe 10 by 14
-b = np.zeros([10,14])
+b = np.zeros([9,14])
 
-
-# Sum around the polygon
-ang_Sum = sum(var[0:8]) # Sum angles
+# Sum around the polygon 
+ang_sum = 360 - sum(var[6:14]) - var[8] # Equation
 ang_diff = np.array(np.zeros(14)) # Initialize 
-ang_diff[:] = diff(ang_Sum,var[:]) # Take Derivative
-
-ang_sum_w = sum(ang) - ang[2] # Misclosure of Internal Angles
-
+ang_diff[:] = diff(ang_sum,var[:]) # Take Derivative
+ang_sum_w = ang_sum.subs(variables) # Misclosure of Internal Angles
 
 # Sine Law 
-sin_421 = sin(a7)/Dst - sin(a4)/Dqs
-sin_421_diff = []
-sin_421_diff[:] = np.array(diff(sin_421,var[:])) # Take Derivative
+sin_41 = sin(a1)/Drs - sin(a4)/Dqr  # Equation
+sin_41_diff = [] # Initialize
+sin_41_diff[:] = np.array(diff(sin_41,var[:])) # Take Derivative
+sin_41_w = sin_41.subs(variables) # Misclosure 
 
-sin_421_w = m.sin(ang[7])/dist[0,2] - m.sin(ang[4])/dist[0,4] # Misclosure of sine law 
+# Sine Law  
+sin_58 = sin(a5)/Dtq - sin(a8)/Dst  # Equation
+sin_58_diff = [] # Initialize
+sin_58_diff[:] = np.array(diff(sin_58,var[:])) # Take Derivative
+sin_58_w = sin_58.subs(variables) # Misclosure
+
+# Cosine Law 421
+cos_2 = sqrt(Drs**2 + Dqr**2 - (2*Dqr*Drs*cos(a2))) -Dqs # Equation
+cos_2_diff = [] # Initialize
+cos_2_diff[:] = np.array(diff(cos_2,var[:]))
+cos_2_w = cos_2.subs(variables) # Misclosure
+
+# Cosine Law 5678
+cos_78 = sqrt(Dst**2 + Dtq**2 - (2*Dst*Dtq*cos(a6+a7))) - Dqs
+cos_78_diff = [] # Initialize
+cos_78_diff[:] = np.array(diff(cos_78,var[:])) # Take Derivative
+cos_78_w = cos_78.subs(variables) # Misclosure
+
+# Sum of Interior Triangle 241
+tri_241 = a2 + a4 + a1 - 180# Equation
+tri_241_diff = [] # Initialization
+tri_241_diff = np.array(diff(tri_241,var[:])) # take Derivative
+tri_241_w = tri_241.subs(variables)  # Misclosure
+
+# Sum of interior Triangle 5678
+tri_856 = a8 + a5 + a6 + a7 - 180# Equation
+tri_856_diff = [] # Initialization
+tri_856_diff = np.array(diff(tri_856,var[:])) # take Derivative
+tri_856_w = tri_856.subs(variables)  # Misclosure
+
+# Sum of interior Triangle 345
+tri_345 = a3 + a4 + a5 + a6 - 180# Equation
+tri_345_diff = [] # Initialization
+tri_345_diff = np.array(diff(tri_345,var[:])) # take Derivative
+tri_345_w = tri_345.subs(variables)  # Misclosure
+
+# Distance Relationship using Cosine law: tri QRS solve dist rs
+dr = (sqrt(Dqs**2 + Dqr**2 - (2*Dqs*Dqr*cos(a1))))/(sqrt(Dst**2 + Dtq**2 - (2*Dst*Dtq*cos(a6+a7))))*(sqrt(Dst**2 + Dtq**2 - (2*Dst*Dtq*cos(a6+a7)))/Dqr)*(Dqr/sqrt(Dqs**2 + Dqr**2 - (2*Dqs*Dqr*cos(a1)))) - ((Drs/sin(a1))*(sin(a2)/Dqs)) # Equation
+dr_diff = [] # Initialize
+dr_diff[:] = np.array(diff(dr,var[:])) # Take Derivative
+dr_w = dr.subs(variables) # Misclosure
+print(dr_w)
 
 
+# For loop to sub in derivative values fpr design matrix 
+for i in range(14):
+    sin_41_diff[i] = sin_41_diff[i].subs(variables)
+    sin_58_diff[i] = sin_58_diff[i].subs(variables)
+    cos_2_diff[i] = cos_2_diff[i].subs(variables)
+    cos_78_diff[i] = cos_78_diff[i].subs(variables)
+    tri_241_diff[i] = tri_241_diff[i].subs(variables)
+    tri_856_diff[i] = tri_856_diff[i].subs(variables)
+    tri_345_diff[i] = tri_345_diff[i].subs(variables)
+    dr_diff[i] = dr_diff[i].subs(variables)
+    #ang_diff[i] = ang_diff[i].subs(variables)
 
 
-# Some other relationship that d1*d2=1????
-something2 = (dist[0,1]/dist[0,0])*(dist[0,0]/dist[0,4])*(dist[0,4]/dist[0,1]) - 1
+b[0,:] = ang_diff[:]
+b[1,:] = sin_41_diff[:]
+b[2,:] = sin_58_diff[:]
+b[3,:] = cos_2_diff[:]
+b[4,:] = cos_78_diff[:]
+b[5,:] = tri_241_diff[:]
+b[6,:] = tri_856_diff[:]
+b[7,:] = tri_345_diff[:]
+b[8,:] = dr_diff[:]
 
-
-dist_rela = (Drs/Dqr)*(Dqr/Dqs)*(Dqs/Drs)
-dist_rela_diff = np.ones([14])
-dist_rela_diff[:] = diff(dist_rela,var[:])
-print(dist_rela_diff)
-
-
+print(np.linalg.matrix_rank(b))
