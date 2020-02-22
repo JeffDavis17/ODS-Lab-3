@@ -58,11 +58,11 @@ tri_345_diff = np.array(diff(tri_345,var[:])) # take Derivative
 tri_345_w = tri_345.subs(variables)  # Misclosure
 
 # Distance Relationship using Cosine law: tri QRS solve dist rs
-dr = (sqrt(Dqs**2 + Dqr**2 - (2*Dqs*Dqr*cos(a1))))/(sqrt(Dst**2 + Dtq**2 - (2*Dst*Dtq*cos(a6+a7))))*(sqrt(Dst**2 + Dtq**2 - (2*Dst*Dtq*cos(a6+a7)))/Dqr)*(Dqr/sqrt(Dqs**2 + Dqr**2 - (2*Dqs*Dqr*cos(a1)))) - ((Drs/sin(a1))*(sin(a2)/Dqs)) # Equation
+dr = (sqrt(Dqs**2 + Dqr**2 - (2*Dqs*Dqr*cos(a1))))/(sqrt(Dst**2 + Dtq**2 - (2*Dst*Dtq*cos(a6+a7))))*(sqrt(Dst**2 + Dtq**2 - (2*Dst*Dtq*cos(a6+a7)))/Dqr)*(Dqr/sqrt(Dqs**2 + Dqr**2 - (2*Dqs*Dqr*cos(a1)))) - ((Drs/sin(a1))*(sin(a2)/Dqs)) - 1# Equation
 dr_diff = [] # Initialize
 dr_diff[:] = np.array(diff(dr,var[:])) # Take Derivative
 dr_w = dr.subs(variables) # Misclosure
-print(dr_w)
+
 
 
 # For loop to sub in derivative values fpr design matrix 
@@ -78,6 +78,7 @@ for i in range(14):
     #ang_diff[i] = ang_diff[i].subs(variables)
 
 
+# Populate Design Matrix
 b[0,:] = ang_diff[:]
 b[1,:] = sin_41_diff[:]
 b[2,:] = sin_58_diff[:]
@@ -87,5 +88,22 @@ b[5,:] = tri_241_diff[:]
 b[6,:] = tri_856_diff[:]
 b[7,:] = tri_345_diff[:]
 b[8,:] = dr_diff[:]
-
 print(np.linalg.matrix_rank(b))
+
+# Misclosures
+w = np.zeros(9)
+w[0] = ang_sum_w
+w[1] = sin_41_w
+w[2] = sin_58_w
+w[3] = cos_2_w
+w[4] = cos_78_w
+w[5] = tri_241_w
+w[6] = tri_345_w
+w[7] = tri_856_w
+w[8] = dr_w
+
+np.savetxt('w.csv', w, delimiter=",",fmt="%.8f") # write misclosure to csv
+
+
+
+
