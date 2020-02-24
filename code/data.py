@@ -39,3 +39,15 @@ Dqs = Symbol('Dqs')
 Drt = Symbol('Drt')
 var = np.array([Dqr,Drs,Dst,Dtq,Dqs,Drt,a1,a2,a3,a4,a5,a6,a7,a8,])
 variables = [(Dqr,dist[0,0]),(Drs,dist[0,1]),(Dst,dist[0,2]),(Dtq,dist[0,3]),(Dqs,dist[0,4]),(Drt,dist[0,5]),(a1,ang[0]),(a2,ang[1]),(a3,ang[2]),(a4,ang[3]),(a5,ang[4]),(a6,ang[5]),(a7,ang[6]),(a8,ang[7])]
+
+dist_er = np.array([0.8,0.7,0.8,0.8,0.9,0.9])
+ang_er = np.zeros(8)
+ang_er[:] = 4*3600
+error = np.zeros(14)
+error[0:6] = dist_er
+error[6:14] = ang_er
+
+
+
+
+
