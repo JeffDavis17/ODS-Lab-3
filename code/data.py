@@ -42,7 +42,7 @@ variables = [(Dqr,dist[0,0]),(Drs,dist[0,1]),(Dst,dist[0,2]),(Dtq,dist[0,3]),(Dq
 
 dist_er = np.array([0.8,0.7,0.8,0.8,0.9,0.9])
 ang_er = np.zeros(8)
-ang_er[:] = 4*3600
+ang_er[:] = 4/3600
 error = np.zeros(14)
 error[0:6] = dist_er
 error[6:14] = ang_er

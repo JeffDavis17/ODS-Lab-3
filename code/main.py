@@ -63,6 +63,7 @@ dr_w = dr.subs(variables) # Misclosure
 
 
 # Error Prop
+ang_sum_prop = np.multiply(ang_diff,error)
 sin_41_prop = np.multiply(sin_41_diff,error)
 sin_58_prop = np.multiply(sin_58_diff,error)
 cos_2_prop = np.multiply(cos_2_diff,error)
@@ -124,6 +125,9 @@ w[8] = dr_w
 
 
 # 3 Sigma Test - Error Propogation
+ang_sum_prop = ang_sum_prop**2
+ang_sum_prop = m.sqrt(sum(ang_sum_prop))
+
 sin_41_prop = sin_41_prop**2
 sin_41_prop = m.sqrt(sum(sin_41_prop))
 
